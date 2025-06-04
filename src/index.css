@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+input[type="password"]::-ms-reveal {
+  display: none;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
