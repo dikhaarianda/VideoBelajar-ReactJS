@@ -1,10 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import Typography from '../atoms/Typography';
 
 const CourseCard = ({ course }) => {
   return (
-    <article className="bg-white p-4 rounded-lg shadow">
+    <Link 
+      to={`/course/${course.id}`}
+      className="block bg-white p-4 rounded-lg shadow cursor-pointer transition-transform hover:scale-105"
+    >
       <div className="flex sm:block gap-5">
         <img
           src={course.image}
@@ -78,13 +82,13 @@ const CourseCard = ({ course }) => {
           {course.price}
         </Typography>
       </div>
-    </article>
+    </Link>
   );
 };
 
 CourseCard.propTypes = {
   course: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.number,
     image: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,

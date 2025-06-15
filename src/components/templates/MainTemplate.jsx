@@ -1,17 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import Logo from '../atoms/Logo';
 import Typography from '../atoms/Typography';
 import ProfileMenu from '../organisms/ProfileMenu';
+import { useAuth } from '../../context/AuthContext';
 
 const MainTemplate = ({ children }) => {
+  const { isAdmin } = useAuth();
+  
   return (
     <div className="bg-[#fffdf3] font-['DM_Sans',sans-serif] text-[16px] font-medium min-h-screen flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-lg sm:border-b border-[#F1F1F1] sm:shadow-none px-5 py-3 mb-8">
         <nav className="container mx-auto flex items-center justify-between">
           <Logo to="/home" />
-          <ProfileMenu />
+          <div className="flex items-center gap-4">
+            {isAdmin() && (
+              <Link 
+                to="/admin" 
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Admin Panel
+              </Link>
+            )}
+            <ProfileMenu />
+          </div>
         </nav>
       </header>
 
