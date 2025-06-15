@@ -28,6 +28,24 @@ export default function AdminPage() {
           { title: '', type: 'video', duration: '15 Menit' }
         ]
       }
+    ],
+    tutors: [
+      {
+        name: '',
+        role: '',
+        description: '',
+        rating: 0,
+        reviews: []
+      }
+    ],
+    reviews: [
+      {
+        name: '',
+        role: '',
+        description: '',
+        rating: 0,
+        date: ''
+      }
     ]
   });
 
@@ -59,13 +77,42 @@ export default function AdminPage() {
     setFormData({
       title: '',
       description: '',
+      fullDescription: '',
       teacherName: '',
       teacherJob: '',
+      teacherDescription: '',
       price: '',
       rating: '',
       image: '',
       teacherImage: '',
-      category: ''
+      category: '',
+      modules: [
+        {
+          id: 1,
+          title: '',
+          lessons: [
+            { title: '', type: 'video', duration: '15 Menit' }
+          ]
+        }
+      ],
+      tutors: [
+        {
+          name: '',
+          role: '',
+          description: '',
+          rating: 0,
+          reviews: []
+        }
+      ],
+      reviews: [
+        {
+          name: '',
+          role: '',
+          description: '',
+          rating: 0,
+          date: ''
+        }
+      ]
     });
     setShowForm(false);
   };
@@ -75,13 +122,42 @@ export default function AdminPage() {
     setFormData({
       title: course.title,
       description: course.description,
+      fullDescription: course.fullDescription || '',
       teacherName: course.teacherName,
       teacherJob: course.teacherJob,
+      teacherDescription: course.teacherDescription || '',
       price: course.price,
       rating: course.rating.split(' ')[0], // Extract rating number
       image: course.image,
       teacherImage: course.teacherImage,
-      category: course.category || ''
+      category: course.category || '',
+      modules: course.modules || [
+        {
+          id: 1,
+          title: '',
+          lessons: [
+            { title: '', type: 'video', duration: '15 Menit' }
+          ]
+        }
+      ],
+      tutors: course.tutors || [
+        {
+          name: '',
+          role: '',
+          description: '',
+          rating: 0,
+          reviews: []
+        }
+      ],
+      reviews: course.reviews || [
+        {
+          name: '',
+          role: '',
+          description: '',
+          rating: 0,
+          date: ''
+        }
+      ]
     });
     setShowForm(true);
   };
@@ -171,7 +247,7 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Deskripsi
+                    Deskripsi Singkat
                   </label>
                   <textarea
                     name="description"
@@ -179,6 +255,19 @@ export default function AdminPage() {
                     onChange={handleInputChange}
                     required
                     rows="3"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Deskripsi Lengkap
+                  </label>
+                  <textarea
+                    name="fullDescription"
+                    value={formData.fullDescription}
+                    onChange={handleInputChange}
+                    rows="4"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -301,6 +390,296 @@ export default function AdminPage() {
                   >
                     Batal
                   </Button>
+                </div>
+
+                {/* Modules Section */}
+                <div className="pt-6 border-t border-gray-300">
+                  <Typography variant="h6" className="mb-2">Modul Kursus</Typography>
+                  {formData.modules.map((module, mIndex) => (
+                    <div key={module.id} className="mb-4 p-4 border border-gray-300 rounded">
+                      <div className="flex justify-between items-center mb-2">
+                        <Input
+                          type="text"
+                          name={`module-title-${module.id}`}
+                          value={module.title}
+                          onChange={(e) => {
+                            const newModules = [...formData.modules];
+                            newModules[mIndex].title = e.target.value;
+                            setFormData(prev => ({ ...prev, modules: newModules }));
+                          }}
+                          placeholder="Judul Modul"
+                          className="flex-grow"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newModules = formData.modules.filter((_, idx) => idx !== mIndex);
+                            setFormData(prev => ({ ...prev, modules: newModules }));
+                          }}
+                          className="ml-2 text-red-600 hover:text-red-900"
+                        >
+                          Hapus Modul
+                        </button>
+                      </div>
+
+                      {/* Lessons */}
+                      <div className="pl-4">
+                        <Typography variant="subtitle1" className="mb-1">Pelajaran</Typography>
+                        {module.lessons.map((lesson, lIndex) => (
+                          <div key={lIndex} className="flex gap-2 mb-2 items-center">
+                            <Input
+                              type="text"
+                              name={`lesson-title-${module.id}-${lIndex}`}
+                              value={lesson.title}
+                              onChange={(e) => {
+                                const newModules = [...formData.modules];
+                                newModules[mIndex].lessons[lIndex].title = e.target.value;
+                                setFormData(prev => ({ ...prev, modules: newModules }));
+                              }}
+                              placeholder="Judul Pelajaran"
+                              className="flex-grow"
+                            />
+                            <select
+                              name={`lesson-type-${module.id}-${lIndex}`}
+                              value={lesson.type}
+                              onChange={(e) => {
+                                const newModules = [...formData.modules];
+                                newModules[mIndex].lessons[lIndex].type = e.target.value;
+                                setFormData(prev => ({ ...prev, modules: newModules }));
+                              }}
+                              className="border border-gray-300 rounded px-2 py-1"
+                            >
+                              <option value="video">Video</option>
+                              <option value="article">Artikel</option>
+                              <option value="quiz">Kuis</option>
+                            </select>
+                            <Input
+                              type="text"
+                              name={`lesson-duration-${module.id}-${lIndex}`}
+                              value={lesson.duration}
+                              onChange={(e) => {
+                                const newModules = [...formData.modules];
+                                newModules[mIndex].lessons[lIndex].duration = e.target.value;
+                                setFormData(prev => ({ ...prev, modules: newModules }));
+                              }}
+                              placeholder="Durasi (misal: 15 Menit)"
+                              className="w-24"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newModules = [...formData.modules];
+                                newModules[mIndex].lessons.splice(lIndex, 1);
+                                setFormData(prev => ({ ...prev, modules: newModules }));
+                              }}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Hapus
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newModules = [...formData.modules];
+                            newModules[mIndex].lessons.push({ title: '', type: 'video', duration: '' });
+                            setFormData(prev => ({ ...prev, modules: newModules }));
+                          }}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          + Tambah Pelajaran
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newModules = [...formData.modules];
+                      newModules.push({
+                        id: newModules.length + 1,
+                        title: '',
+                        lessons: [{ title: '', type: 'video', duration: '' }]
+                      });
+                      setFormData(prev => ({ ...prev, modules: newModules }));
+                    }}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    + Tambah Modul
+                  </button>
+                </div>
+
+                {/* Tutors Section */}
+                <div className="pt-6 border-t border-gray-300">
+                  <Typography variant="h6" className="mb-2">Tutor</Typography>
+                  {formData.tutors.map((tutor, tIndex) => (
+                    <div key={tIndex} className="mb-4 p-4 border border-gray-300 rounded">
+                      <Input
+                        type="text"
+                        name={`tutor-name-${tIndex}`}
+                        value={tutor.name}
+                        onChange={(e) => {
+                          const newTutors = [...formData.tutors];
+                          newTutors[tIndex].name = e.target.value;
+                          setFormData(prev => ({ ...prev, tutors: newTutors }));
+                        }}
+                        placeholder="Nama Tutor"
+                        className="mb-2"
+                      />
+                      <Input
+                        type="text"
+                        name={`tutor-role-${tIndex}`}
+                        value={tutor.role}
+                        onChange={(e) => {
+                          const newTutors = [...formData.tutors];
+                          newTutors[tIndex].role = e.target.value;
+                          setFormData(prev => ({ ...prev, tutors: newTutors }));
+                        }}
+                        placeholder="Peran Tutor"
+                        className="mb-2"
+                      />
+                      <textarea
+                        name={`tutor-description-${tIndex}`}
+                        value={tutor.description}
+                        onChange={(e) => {
+                          const newTutors = [...formData.tutors];
+                          newTutors[tIndex].description = e.target.value;
+                          setFormData(prev => ({ ...prev, tutors: newTutors }));
+                        }}
+                        placeholder="Deskripsi Tutor"
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                      />
+                      <Input
+                        type="number"
+                        name={`tutor-rating-${tIndex}`}
+                        value={tutor.rating}
+                        onChange={(e) => {
+                          const newTutors = [...formData.tutors];
+                          newTutors[tIndex].rating = Number(e.target.value);
+                          setFormData(prev => ({ ...prev, tutors: newTutors }));
+                        }}
+                        placeholder="Rating Tutor"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                        className="mb-2"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newTutors = formData.tutors.filter((_, idx) => idx !== tIndex);
+                          setFormData(prev => ({ ...prev, tutors: newTutors }));
+                        }}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Hapus Tutor
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newTutors = [...formData.tutors];
+                      newTutors.push({ name: '', role: '', description: '', rating: 0, reviews: [] });
+                      setFormData(prev => ({ ...prev, tutors: newTutors }));
+                    }}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    + Tambah Tutor
+                  </button>
+                </div>
+
+                {/* Reviews Section */}
+                <div className="pt-6 border-t border-gray-300">
+                  <Typography variant="h6" className="mb-2">Review</Typography>
+                  {formData.reviews.map((review, rIndex) => (
+                    <div key={rIndex} className="mb-4 p-4 border border-gray-300 rounded">
+                      <Input
+                        type="text"
+                        name={`review-name-${rIndex}`}
+                        value={review.name}
+                        onChange={(e) => {
+                          const newReviews = [...formData.reviews];
+                          newReviews[rIndex].name = e.target.value;
+                          setFormData(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        placeholder="Nama Reviewer"
+                        className="mb-2"
+                      />
+                      <Input
+                        type="text"
+                        name={`review-role-${rIndex}`}
+                        value={review.role}
+                        onChange={(e) => {
+                          const newReviews = [...formData.reviews];
+                          newReviews[rIndex].role = e.target.value;
+                          setFormData(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        placeholder="Peran Reviewer"
+                        className="mb-2"
+                      />
+                      <textarea
+                        name={`review-description-${rIndex}`}
+                        value={review.description}
+                        onChange={(e) => {
+                          const newReviews = [...formData.reviews];
+                          newReviews[rIndex].description = e.target.value;
+                          setFormData(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        placeholder="Deskripsi Review"
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                      />
+                      <Input
+                        type="number"
+                        name={`review-rating-${rIndex}`}
+                        value={review.rating}
+                        onChange={(e) => {
+                          const newReviews = [...formData.reviews];
+                          newReviews[rIndex].rating = Number(e.target.value);
+                          setFormData(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        placeholder="Rating Review"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                        className="mb-2"
+                      />
+                      <Input
+                        type="date"
+                        name={`review-date-${rIndex}`}
+                        value={review.date}
+                        onChange={(e) => {
+                          const newReviews = [...formData.reviews];
+                          newReviews[rIndex].date = e.target.value;
+                          setFormData(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        className="mb-2"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newReviews = formData.reviews.filter((_, idx) => idx !== rIndex);
+                          setFormData(prev => ({ ...prev, reviews: newReviews }));
+                        }}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Hapus Review
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newReviews = [...formData.reviews];
+                      newReviews.push({ name: '', role: '', description: '', rating: 0, date: '' });
+                      setFormData(prev => ({ ...prev, reviews: newReviews }));
+                    }}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    + Tambah Review
+                  </button>
                 </div>
               </form>
             </div>
