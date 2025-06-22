@@ -91,15 +91,16 @@ export default function CourseDetailPage() {
 
   return (
     <MainTemplate>
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-500 mb-6">
           <span>Beranda</span> / <span>{course.category}</span> / <span className="text-gray-900">{course.title}</span>
         </nav>
 
         {/* Hero Section */}
-        <div className="bg-gray-900 rounded-lg overflow-hidden mb-8">
-          <div className="p-8 text-white">
+        <section className="bg-cover bg-center h-full rounded-lg"
+        style={{ backgroundImage: "url('/assets/index/banner/banner_frame1.jpeg')" }}>
+          <div className="p-24 text-white bg-black/80 rounded-lg">
             <Typography variant="h1" color="white" className="text-3xl font-bold mb-4">
               {course.title}
             </Typography>
@@ -110,7 +111,7 @@ export default function CourseDetailPage() {
             <div className="flex items-center gap-4 mb-6">
               <div className="flex text-yellow-400">
                 {course.stars.map((star, index) => (
-                  <i key={index} className={`fas fa-star${star === 'empty' ? '-o' : star === 'half' ? '-half-o' : ''}`} />
+                  <i key={index} className={`${star === 'full' ? 'fas fa-star' : star === 'half' ? 'fas fa-star-half-stroke' : 'far fa-star'}`} />
                 ))}
               </div>
               <Typography variant="body2" color="white">
@@ -118,7 +119,7 @@ export default function CourseDetailPage() {
               </Typography>
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -136,7 +137,7 @@ export default function CourseDetailPage() {
               <Typography variant="h5" className="mb-6">Belajar bersama Tutor Profesional</Typography>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {tutors.map((tutor, index) => (
-                  <div key={index} className="flex gap-4">
+                  <div key={index} className="flex gap-4 border border-[#3A35411F] rounded-xl p-3">
                     <img
                       src="/assets/index/course section/course teacher/image-1.png"
                       alt={tutor.name}
@@ -200,7 +201,7 @@ export default function CourseDetailPage() {
               <Typography variant="h5" className="mb-6">Rating dan Review</Typography>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {reviews.map((review, index) => (
-                  <div key={index} className="flex gap-4">
+                  <div key={index} className="flex gap-4 border border-[#3A35411F] rounded-xl p-3">
                     <img
                       src="/assets/index/course section/course teacher/image-1.png"
                       alt={review.name}
@@ -239,53 +240,67 @@ export default function CourseDetailPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <div className="mb-6">
-                  <Typography variant="h6" className="text-orange-600 mb-2">
+              <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+                <div>
+                  <Typography variant="h6" className="mb-2 font-semibold">
                     {course.title}
                   </Typography>
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
                     <Typography variant="h4" className="font-bold text-green-600">
                       {course.price}
                     </Typography>
+                    <span className="line-through text-gray-400">Rp 500K</span>
+                    <span className="bg-yellow-300 text-yellow-900 text-xs font-semibold px-2 py-0.5 rounded">
+                      Diskon 50%
+                    </span>
                   </div>
+                  <p className="text-blue-600 text-sm mb-1">Penawaran spesial tersisa 2 hari lagi!</p>
                 </div>
 
-                <div className="space-y-3 mb-6">
-                  <Button 
-                    variant="primary" 
-                    className="w-full bg-orange-500 hover:bg-orange-600"
+                <div>
+                  <Button
+                    variant="primary"
+                    className="w-full bg-green-500 hover:bg-green-600 border-green-500"
                   >
                     Beli Sekarang
                   </Button>
                 </div>
 
-                <div className="space-y-4">
-                  <Typography variant="h6" className="font-semibold">
-                    Kelas ini Sudah Termasuk
+                <div>
+                  <Typography variant="h6" className="font-semibold mb-3">
+                    Kelas Ini Sudah Termasuk
                   </Typography>
-                  
-                  <div className="space-y-3">
-                    {course.modules && (
-                      <div className="flex items-center gap-3">
-                        <i className="fas fa-video text-orange-500"></i>
-                        <Typography variant="body2">
-                          {course.modules.reduce((total, module) => total + module.lessons.length, 0)} Video
-                        </Typography>
-                      </div>
-                    )}
+                  <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-gray-700">
                     <div className="flex items-center gap-3">
-                      <i className="fas fa-certificate text-orange-500"></i>
+                      <i className="fas fa-file-alt text-gray-600 text-lg"></i>
+                      <Typography variant="body2">Ujian Akhir</Typography>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <i className="fas fa-video text-gray-600 text-lg"></i>
+                      <Typography variant="body2">{course.modules ? course.modules.reduce((total, module) => total + module.lessons.length, 0) : 0} Video</Typography>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <i className="fas fa-file-upload text-gray-600 text-lg"></i>
+                      <Typography variant="body2">7 Dokumen</Typography>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <i className="fas fa-certificate text-gray-600 text-lg"></i>
                       <Typography variant="body2">Sertifikat</Typography>
                     </div>
                     <div className="flex items-center gap-3">
-                      <i className="fas fa-clock text-orange-500"></i>
-                      <Typography variant="body2">
-                        {course.modules && course.modules.reduce((total, module) => 
-                          total + module.lessons.reduce((lessonTotal, lesson) => 
-                            lessonTotal + parseInt(lesson.duration.split(' ')[0]), 0), 0)} Menit
-                      </Typography>
+                      <i className="fas fa-clipboard-check text-gray-600 text-lg"></i>
+                      <Typography variant="body2">Pretest</Typography>
                     </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Typography variant="h6" className="font-semibold mb-3">
+                    Bahasa Pengantar
+                  </Typography>
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <i className="fas fa-globe text-gray-600"></i>
+                    <Typography variant="body2">Bahasa Indonesia</Typography>
                   </div>
                 </div>
               </div>

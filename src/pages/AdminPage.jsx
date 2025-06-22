@@ -255,7 +255,7 @@ export default function AdminPage() {
                     onChange={handleInputChange}
                     required
                     rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-[#F1F1F1] rounded-md focus:outline-none focus:ring-2 focus:ring-[#3ECF4C] focus:border-transparent hover:border-[#3ECF4C]"
                   />
                 </div>
 
@@ -268,7 +268,7 @@ export default function AdminPage() {
                     value={formData.fullDescription}
                     onChange={handleInputChange}
                     rows="4"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-[#F1F1F1] rounded-md focus:outline-none focus:ring-2 focus:ring-[#3ECF4C] focus:border-transparent hover:border-[#3ECF4C]"
                   />
                 </div>
 
@@ -310,7 +310,7 @@ export default function AdminPage() {
                       name="price"
                       value={formData.price}
                       onChange={handleInputChange}
-                      placeholder="Rp 300K"
+                      placeholder="Rp {input nominal}K"
                       required
                     />
                   </div>
@@ -341,7 +341,7 @@ export default function AdminPage() {
                     name="image"
                     value={formData.image}
                     onChange={handleInputChange}
-                    placeholder="/assets/index/course section/course type/image-1.jpeg"
+                    placeholder="/assets/index/course section/course type/image-{image number | 1-9}.jpeg"
                     required
                   />
                 </div>
@@ -355,7 +355,7 @@ export default function AdminPage() {
                     name="teacherImage"
                     value={formData.teacherImage}
                     onChange={handleInputChange}
-                    placeholder="/assets/index/course section/course teacher/image-1.png"
+                    placeholder="/assets/index/course section/course teacher/image-{image number | 1-8}.png"
                     required
                   />
                 </div>
@@ -369,7 +369,7 @@ export default function AdminPage() {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-[#F1F1F1] rounded-md focus:outline-none focus:ring-2 focus:ring-[#3ECF4C] focus:border-transparent hover:border-[#3ECF4C]"
                   >
                     <option value="">Pilih Kategori</option>
                     <option value="Pemasaran">Pemasaran</option>
@@ -379,25 +379,14 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <Button type="submit" variant="primary">
-                    {editingCourse ? 'Update Kursus' : 'Tambah Kursus'}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="secondary" 
-                    onClick={handleCancel}
-                  >
-                    Batal
-                  </Button>
-                </div>
-
                 {/* Modules Section */}
                 <div className="pt-6 border-t border-gray-300">
                   <Typography variant="h6" className="mb-2">Modul Kursus</Typography>
                   {formData.modules.map((module, mIndex) => (
                     <div key={module.id} className="mb-4 p-4 border border-gray-300 rounded">
                       <div className="flex justify-between items-center mb-2">
+                        <div className='w-full'>
+                        <label className='block'>Judul Modul</label>
                         <Input
                           type="text"
                           name={`module-title-${module.id}`}
@@ -407,24 +396,24 @@ export default function AdminPage() {
                             newModules[mIndex].title = e.target.value;
                             setFormData(prev => ({ ...prev, modules: newModules }));
                           }}
-                          placeholder="Judul Modul"
-                          className="flex-grow"
+                          // className="flex-grow"
                         />
+                        </div>
                         <button
                           type="button"
                           onClick={() => {
                             const newModules = formData.modules.filter((_, idx) => idx !== mIndex);
                             setFormData(prev => ({ ...prev, modules: newModules }));
                           }}
-                          className="ml-2 text-red-600 hover:text-red-900"
+                          className=" text-red-600 hover:text-red-900"
                         >
                           Hapus Modul
                         </button>
                       </div>
 
                       {/* Lessons */}
-                      <div className="pl-4">
-                        <Typography variant="subtitle1" className="mb-1">Pelajaran</Typography>
+                      <div>
+                        <Typography variant="subtitle1" className="mb-1">Judul Pelajaran</Typography>
                         {module.lessons.map((lesson, lIndex) => (
                           <div key={lIndex} className="flex gap-2 mb-2 items-center">
                             <Input
@@ -436,7 +425,6 @@ export default function AdminPage() {
                                 newModules[mIndex].lessons[lIndex].title = e.target.value;
                                 setFormData(prev => ({ ...prev, modules: newModules }));
                               }}
-                              placeholder="Judul Pelajaran"
                               className="flex-grow"
                             />
                             <select
@@ -447,7 +435,7 @@ export default function AdminPage() {
                                 newModules[mIndex].lessons[lIndex].type = e.target.value;
                                 setFormData(prev => ({ ...prev, modules: newModules }));
                               }}
-                              className="border border-gray-300 rounded px-2 py-1"
+                              className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#3ECF4C] focus:border-transparent hover:border-[#3ECF4C]"
                             >
                               <option value="video">Video</option>
                               <option value="article">Artikel</option>
@@ -524,6 +512,7 @@ export default function AdminPage() {
                           setFormData(prev => ({ ...prev, tutors: newTutors }));
                         }}
                         placeholder="Nama Tutor"
+                        disableAutoFillOnFocus
                         className="mb-2"
                       />
                       <Input
@@ -536,6 +525,7 @@ export default function AdminPage() {
                           setFormData(prev => ({ ...prev, tutors: newTutors }));
                         }}
                         placeholder="Peran Tutor"
+                        disableAutoFillOnFocus
                         className="mb-2"
                       />
                       <textarea
@@ -548,8 +538,9 @@ export default function AdminPage() {
                         }}
                         placeholder="Deskripsi Tutor"
                         rows="3"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                        className="w-full px-3 py-2 border border-[#F1F1F1] rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-[#3ECF4C] focus:border-transparent hover:border-[#3ECF4C]"
                       />
+                      <label className='block text-gray-500'>Rating</label>
                       <Input
                         type="number"
                         name={`tutor-rating-${tIndex}`}
@@ -559,7 +550,6 @@ export default function AdminPage() {
                           newTutors[tIndex].rating = Number(e.target.value);
                           setFormData(prev => ({ ...prev, tutors: newTutors }));
                         }}
-                        placeholder="Rating Tutor"
                         min="0"
                         max="5"
                         step="0.1"
@@ -605,6 +595,7 @@ export default function AdminPage() {
                           setFormData(prev => ({ ...prev, reviews: newReviews }));
                         }}
                         placeholder="Nama Reviewer"
+                        disableAutoFillOnFocus
                         className="mb-2"
                       />
                       <Input
@@ -617,6 +608,7 @@ export default function AdminPage() {
                           setFormData(prev => ({ ...prev, reviews: newReviews }));
                         }}
                         placeholder="Peran Reviewer"
+                        disableAutoFillOnFocus
                         className="mb-2"
                       />
                       <textarea
@@ -629,8 +621,9 @@ export default function AdminPage() {
                         }}
                         placeholder="Deskripsi Review"
                         rows="3"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                        className="w-full px-3 py-2 border border-[#F1F1F1] rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-[#3ECF4C] focus:border-transparent hover:border-[#3ECF4C]"
                       />
+                      <label className='block text-gray-500'>Rating</label>
                       <Input
                         type="number"
                         name={`review-rating-${rIndex}`}
@@ -646,6 +639,7 @@ export default function AdminPage() {
                         step="0.1"
                         className="mb-2"
                       />
+                      <label className='block text-gray-500'>Date Review</label>
                       <Input
                         type="date"
                         name={`review-date-${rIndex}`}
@@ -680,6 +674,18 @@ export default function AdminPage() {
                   >
                     + Tambah Review
                   </button>
+                </div>
+                <div className="flex gap-4 pt-6 border-t border-gray-300">
+                  <Button type="submit" variant="primary">
+                    {editingCourse ? 'Update Kursus' : 'Tambah Kursus'}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="secondary" 
+                    onClick={handleCancel}
+                  >
+                    Batal
+                  </Button>
                 </div>
               </form>
             </div>
