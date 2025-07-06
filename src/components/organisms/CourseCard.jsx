@@ -18,7 +18,7 @@ const CourseCard = ({ course }) => {
         <div className="w-5/6 sm:w-full">
           <Typography
             variant="h6"
-            className="mt-0 sm:mt-4 font-['Poppins']"
+            className="mt-0 sm:mt-4"
           >
             {course.title}
           </Typography>

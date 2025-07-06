@@ -9,3 +9,37 @@ input[type="password"]::-ms-reveal {
   display: -webkit-box;
   -webkit-box-orient: vertical;
 }
+
+/* Loading Spinner Styles */
+.loader {
+  display: inline-block;
+  position: relative;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Primary color loader (default) */
+.loader-primary {
+  border-top: 4px solid #3ECF4C;
+}
+
+/* White color loader */
+.loader-white {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #FFF;
+}
+
+/* Green color loader */
+.loader-green {
+  border-top: 4px solid #10B981;
+}
+
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}

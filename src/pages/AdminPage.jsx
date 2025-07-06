@@ -3,11 +3,13 @@ import { useCourses } from '../context/CourseContext';
 import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
+import LoadingSpinner from '../components/atoms/LoadingSpinner';
 
 export default function AdminPage() {
   const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
   const [showForm, setShowForm] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -57,8 +59,12 @@ export default function AdminPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     const courseData = {
       ...formData,
@@ -114,6 +120,7 @@ export default function AdminPage() {
         }
       ]
     });
+    setIsSubmitting(false);
     setShowForm(false);
   };
 
@@ -676,13 +683,25 @@ export default function AdminPage() {
                   </button>
                 </div>
                 <div className="flex gap-4 pt-6 border-t border-gray-300">
-                  <Button type="submit" variant="primary">
-                    {editingCourse ? 'Update Kursus' : 'Tambah Kursus'}
+                  <Button 
+                    type="submit" 
+                    variant="primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <LoadingSpinner size="small" color="white" />
+                        <span>Menyimpan...</span>
+                      </div>
+                    ) : (
+                      editingCourse ? 'Update Kursus' : 'Tambah Kursus'
+                    )}
                   </Button>
                   <Button 
                     type="button" 
                     variant="secondary" 
                     onClick={handleCancel}
+                    disabled={isSubmitting}
                   >
                     Batal
                   </Button>

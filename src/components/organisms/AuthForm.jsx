@@ -6,6 +6,7 @@ import FormField from '../molecules/FormField';
 import PhoneInput from '../molecules/PhoneInput';
 import Button from '../atoms/Button';
 import SocialButton from '../molecules/SocialButton';
+import LoadingSpinner from '../atoms/LoadingSpinner';
 
 const AuthForm = ({
   type = 'login', // 'login' or 'register'
@@ -32,10 +33,40 @@ const AuthForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
-    if (type === 'login') {
-      navigate('/home');
+
+    if (type === 'register') {
+      // Validasi nama lengkap minimal 2 kata
+      if (formData.fullName.trim().split(' ').length < 2) {
+        alert('Nama lengkap harus terdiri dari minimal 2 kata!');
+        return;
+      }
+      
+      // Validasi nomor telepon
+      if (formData.phone.length < 8) {
+        alert('Nomor telepon tidak valid! Minimal 8 digit.');
+        return;
+      }
+      
+      if (formData.password !== formData.confirmPassword) {
+        alert('Password dan Konfirmasi Password tidak sama!');
+        return;
+      }
     }
+
+    // Validasi email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Format email tidak valid! Mohon masukkan email yang benar.');
+      return;
+    }
+    
+    // Validasi password minimal 6 karakter
+    if (formData.password.length < 6) {
+      alert('Password minimal harus 6 karakter!');
+      return;
+    }
+    
+    onSubmit(formData);
   };
 
   return (
@@ -81,7 +112,14 @@ const AuthForm = ({
             </label>
             <PhoneInput
               value={formData.phone}
-              onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+              onChange={(value) => {
+                // Remove leading zero after country code if present
+                var newValue = value;
+                if (value.charAt(3) === '0') {
+                  newValue = value.slice(0, 3) + value.slice(4);
+                }
+                setFormData(prev => ({ ...prev, phone: newValue }));
+              }}
               required
               name="phone"
               id="phone"
@@ -131,7 +169,14 @@ const AuthForm = ({
           className="w-full mb-4"
           disabled={loading}
         >
-          {type === 'login' ? 'Masuk' : 'Daftar'}
+          {loading ? (
+            <div className="flex items-center justify-center gap-2">
+              <LoadingSpinner size="small" color="white" />
+              <span>Memproses...</span>
+            </div>
+          ) : (
+            type === 'login' ? 'Masuk' : 'Daftar'
+          )}
         </Button>
 
         <Button

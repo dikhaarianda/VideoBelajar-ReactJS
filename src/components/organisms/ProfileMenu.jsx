@@ -2,10 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MdOutlineLogout } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import Typography from '../atoms/Typography';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -32,12 +36,55 @@ const ProfileMenu = () => {
     };
   }, [isOpen]);
 
-  const menuItems = [
-    { label: 'Profil Saya', href: '#' },
-    { label: 'Kelas Saya', href: '#' },
-    { label: 'Pesanan Saya', href: '#' },
-    { label: 'Keluar', href: '/login', icon: MdOutlineLogout, className: 'text-red-500' }
-  ];
+  const handleMenuItemClick = (item) => {
+    setIsOpen(false);
+    
+    if (item.label === 'Keluar') {
+      logout();
+      window.location.reload();
+    } else {
+      // If user is not logged in and clicks on profile-related items, redirect to login
+      if (!user) {
+        navigate('/login');
+      } else {
+        // Handle navigation for logged-in users
+        switch (item.label) {
+          case 'Profil Saya':
+            navigate('/profile');
+            break;
+          case 'Kelas Saya':
+            navigate('/profile');
+            break;
+          case 'Pesanan Saya':
+            navigate('/profile');
+            break;
+          default:
+            console.log(`Navigate to ${item.label}`);
+        }
+      }
+    }
+  };
+
+  // Filter menu items based on login status
+  const getMenuItems = () => {
+    const baseItems = [
+      { label: 'Profil Saya' },
+      { label: 'Kelas Saya' },
+      { label: 'Pesanan Saya' }
+    ];
+
+    // Only show logout button if user is logged in
+    if (user) {
+      return [
+        ...baseItems,
+        { label: 'Keluar', icon: MdOutlineLogout, className: 'text-red-500' }
+      ];
+    }
+
+    return baseItems;
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <div className="flex items-center justify-center gap-12 text-[#333333AD] text-[16px]">
@@ -50,9 +97,9 @@ const ProfileMenu = () => {
           className="transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
         >
           <img 
-            src="/assets/index/Avatar.png" 
+            src={user ? "/assets/index/Avatar.png" : "/assets/index/Avatar1.png"}
             alt="User Profile" 
-            className="hidden sm:block"
+            className="hidden sm:block w-10 h-10 rounded-sm object-cover"
           />
           <RxHamburgerMenu size={30} className="sm:hidden block" />
         </button>
@@ -62,10 +109,10 @@ const ProfileMenu = () => {
             {/* Desktop Menu */}
             <div className="hidden sm:block absolute right-0 mt-3 w-48 bg-white shadow-lg z-50 overflow-hidden">
               {menuItems.map((item) => (
-                <a
+                <button
                   key={item.label}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors border-b border-gray-300 ${
+                  onClick={() => handleMenuItemClick(item)}
+                  className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors border-b border-gray-300 w-full text-left ${
                     item.className || ''
                   }`}
                 >
@@ -73,7 +120,7 @@ const ProfileMenu = () => {
                     {item.label}
                   </Typography>
                   {item.icon && <item.icon size={20} />}
-                </a>
+                </button>
               ))}
             </div>
 
@@ -86,16 +133,16 @@ const ProfileMenu = () => {
                 Kategori
               </a>
               {menuItems.map((item) => (
-                <a
+                <button
                   key={item.label}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-5 py-4 border-b border-gray-300 hover:bg-gray-100 transition-colors ${
+                  onClick={() => handleMenuItemClick(item)}
+                  className={`flex items-center gap-2 px-5 py-4 border-b border-gray-300 hover:bg-gray-100 transition-colors w-full text-left ${
                     item.className || ''
                   }`}
                 >
                   {item.label}
                   {item.icon && <item.icon size={20} />}
-                </a>
+                </button>
               ))}
             </div>
           </>

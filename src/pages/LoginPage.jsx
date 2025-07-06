@@ -6,15 +6,23 @@ import AuthForm from '../components/organisms/AuthForm';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
 
-  const handleSubmit = (formData) => {
+  const handleSubmit = async (formData) => {
     const { email, password } = formData;
     
-    if (login(email, password)) {
+    // Validasi input kosong
+    if (!email || !password) {
+      alert('Mohon lengkapi email dan password!');
+      return;
+    }
+    
+    const success = await login(email, password);
+    if (success) {
+      alert('Login berhasil! Selamat datang kembali.');
       navigate('/home');
     } else {
-      console.error('Login failed');
+      alert('Login gagal! Email atau password yang Anda masukkan salah.');
     }
   };
 
@@ -23,6 +31,7 @@ export default function LoginPage() {
       <AuthForm 
         type="login"
         onSubmit={handleSubmit}
+        loading={loading}
       />
     </AuthTemplate>
   );

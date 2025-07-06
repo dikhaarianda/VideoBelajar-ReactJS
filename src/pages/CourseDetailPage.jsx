@@ -4,6 +4,7 @@ import MainTemplate from '../components/templates/MainTemplate';
 import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import CourseCard from '../components/organisms/CourseCard';
+import LoadingScreen from '../components/organisms/LoadingScreen';
 import { useCourses } from '../context/CourseContext';
 
 export default function CourseDetailPage() {
@@ -59,9 +60,11 @@ export default function CourseDetailPage() {
   if (!courses || courses.length === 0) {
     return (
       <MainTemplate>
-        <div className="flex justify-center items-center h-64">
-          <Typography variant="h3">Loading courses...</Typography>
-        </div>
+        <LoadingScreen 
+          message="Loading courses..." 
+          size="large" 
+          color="primary"
+        />
       </MainTemplate>
     );
   }
@@ -76,9 +79,11 @@ export default function CourseDetailPage() {
   if (!course) {
     return (
       <MainTemplate>
-        <div className="flex justify-center items-center h-64">
-          <Typography variant="h3">Loading...</Typography>
-        </div>
+        <LoadingScreen 
+          message="Loading course details..." 
+          size="large" 
+          color="primary"
+        />
       </MainTemplate>
     );
   }

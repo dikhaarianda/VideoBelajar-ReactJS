@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainTemplate from '../components/templates/MainTemplate';
 import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import CourseCard from '../components/organisms/CourseCard';
+import LoadingScreen from '../components/organisms/LoadingScreen';
 import { useCourses } from '../context/CourseContext';
 
 export default function HomePage() {
@@ -10,6 +11,8 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState('Semua Kelas');
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterMessage, setNewsletterMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const categories = ['Semua Kelas', 'Pemasaran', 'Desain', 'Pengembangan Diri', 'Bisnis'];
 
@@ -17,8 +20,23 @@ export default function HomePage() {
     ? courses 
     : courses.filter(course => course.category === activeCategory);
 
-  const handleCategoryClick = (category) => {
+  // Initial loading effect
+  useEffect(() => {
+    const initializeHomePage = async () => {
+      // Simulate initial loading time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setIsInitialLoading(false);
+    };
+
+    initializeHomePage();
+  }, []);
+
+  const handleCategoryClick = async (category) => {
+    setIsLoading(true);
+    // Simulate loading delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500));
     setActiveCategory(category);
+    setIsLoading(false);
   };
 
   const handleNewsletterSubmit = (e) => {
@@ -35,6 +53,20 @@ export default function HomePage() {
     setNewsletterEmail('');
     setTimeout(() => setNewsletterMessage(''), 3000);
   };
+
+  // Show initial loading screen
+  if (isInitialLoading) {
+    return (
+      <MainTemplate>
+        <LoadingScreen 
+          message="Memuat halaman..." 
+          size="large" 
+          color="primary"
+          fullScreen={true}
+        />
+      </MainTemplate>
+    );
+  }
 
   return (
     <MainTemplate>
@@ -80,10 +112,21 @@ export default function HomePage() {
           ))}
         </nav>
 
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 items-center">
-          {filteredCourses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
+        <section className="mt-6">
+          {isLoading ? (
+            <LoadingScreen 
+              message="Memuat kursus..." 
+              size="large" 
+              color="primary"
+              className="h-40"
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+              {filteredCourses.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          )}
         </section>
       </section>
 
