@@ -5,60 +5,18 @@ import Typography from '../atoms/Typography';
 const CourseContent = ({ course }) => {
   const [expandedModules, setExpandedModules] = useState({});
 
-  const courseModules = [
-    {
-      id: 1,
-      title: 'Pengenalan UI/UX Design',
-      duration: '45 menit',
-      lessons: [
-        { title: 'Apa itu UI/UX Design?', duration: '10 menit', type: 'video' },
-        { title: 'Perbedaan UI dan UX', duration: '8 menit', type: 'video' },
-        { title: 'Tools yang digunakan', duration: '12 menit', type: 'video' },
-        { title: 'Quiz: Dasar UI/UX', duration: '15 menit', type: 'quiz' }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Design Thinking Process',
-      duration: '60 menit',
-      lessons: [
-        { title: 'Empathize - Memahami User', duration: '15 menit', type: 'video' },
-        { title: 'Define - Mendefinisikan Masalah', duration: '12 menit', type: 'video' },
-        { title: 'Ideate - Brainstorming Solusi', duration: '18 menit', type: 'video' },
-        { title: 'Prototype - Membuat Prototipe', duration: '15 menit', type: 'video' }
-      ]
-    },
-    {
-      id: 3,
-      title: 'User Research & Analysis',
-      duration: '75 menit',
-      lessons: [
-        { title: 'Metode User Research', duration: '20 menit', type: 'video' },
-        { title: 'Membuat User Persona', duration: '25 menit', type: 'video' },
-        { title: 'User Journey Mapping', duration: '30 menit', type: 'video' }
-      ]
-    },
-    {
-      id: 4,
-      title: 'Wireframing & Prototyping',
-      duration: '90 menit',
-      lessons: [
-        { title: 'Low-fidelity Wireframes', duration: '25 menit', type: 'video' },
-        { title: 'High-fidelity Mockups', duration: '35 menit', type: 'video' },
-        { title: 'Interactive Prototypes', duration: '30 menit', type: 'video' }
-      ]
-    },
-    {
-      id: 5,
-      title: 'Visual Design Principles',
-      duration: '80 menit',
-      lessons: [
-        { title: 'Typography dalam Design', duration: '20 menit', type: 'video' },
-        { title: 'Color Theory', duration: '25 menit', type: 'video' },
-        { title: 'Layout dan Composition', duration: '35 menit', type: 'video' }
-      ]
-    }
-  ];
+  if (!course || !course.modules) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <Typography variant="h5" className="mb-6">
+          Kurikulum Kelas
+        </Typography>
+        <Typography variant="body1" color="secondary">
+          Data kursus tidak tersedia.
+        </Typography>
+      </div>
+    );
+  }
 
   const toggleModule = (moduleId) => {
     setExpandedModules(prev => ({
@@ -80,6 +38,17 @@ const CourseContent = ({ course }) => {
     }
   };
 
+  const totalVideos = course.modules.reduce((total, module) => {
+    return total + module.lessons.filter(lesson => lesson.type === 'video').length;
+  }, 0);
+
+  const totalDuration = course.modules.reduce((total, module) => {
+    return total + module.lessons.reduce((modTotal, lesson) => {
+      const durationNum = parseInt(lesson.duration);
+      return modTotal + (isNaN(durationNum) ? 0 : durationNum);
+    }, 0);
+  }, 0);
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <Typography variant="h5" className="mb-6">
@@ -89,23 +58,20 @@ const CourseContent = ({ course }) => {
       <div className="mb-6 flex flex-wrap gap-4 text-sm text-gray-600">
         <span>
           <i className="fas fa-book mr-2"></i>
-          {courseModules.length} Modul
+          {course.modules.length} Modul
         </span>
         <span>
           <i className="fas fa-video mr-2"></i>
-          {courseModules.reduce((total, module) => total + module.lessons.length, 0)} Video
+          {totalVideos} Video
         </span>
         <span>
           <i className="fas fa-clock mr-2"></i>
-          {courseModules.reduce((total, module) => {
-            const duration = parseInt(module.duration);
-            return total + duration;
-          }, 0)} menit total
+          {totalDuration} menit total
         </span>
       </div>
 
       <div className="space-y-4">
-        {courseModules.map((module) => (
+        {course.modules.map((module) => (
           <div key={module.id} className="border border-gray-200 rounded-lg">
             <button
               onClick={() => toggleModule(module.id)}
@@ -122,7 +88,7 @@ const CourseContent = ({ course }) => {
                     {module.title}
                   </Typography>
                   <Typography variant="body2" color="secondary">
-                    {module.lessons.length} pelajaran • {module.duration}
+                    {module.lessons.length} pelajaran
                   </Typography>
                 </div>
               </div>
@@ -170,7 +136,21 @@ const CourseContent = ({ course }) => {
 };
 
 CourseContent.propTypes = {
-  course: PropTypes.object.isRequired
+  course: PropTypes.shape({
+    modules: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        title: PropTypes.string.isRequired,
+        lessons: PropTypes.arrayOf(
+          PropTypes.shape({
+            title: PropTypes.string.isRequired,
+            duration: PropTypes.string.isRequired,
+            type: PropTypes.string.isRequired,
+          })
+        ).isRequired,
+      })
+    ).isRequired,
+  }).isRequired,
 };
 
 export default CourseContent;

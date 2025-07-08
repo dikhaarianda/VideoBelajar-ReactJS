@@ -59,7 +59,7 @@ const ProfileMenu = () => {
             navigate('/profile');
             break;
           default:
-            console.log(`Navigate to ${item.label}`);
+            // console.log(`Navigate to ${item.label}`);
         }
       }
     }

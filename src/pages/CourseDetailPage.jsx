@@ -23,14 +23,11 @@ export default function CourseDetailPage() {
     }
 
     if (!courses || courses.length === 0) {
-      console.log('Waiting for courses to load...');
       return;
     }
 
     try {
       const courseId = parseInt(id);
-      console.log(`Looking for course with ID: ${courseId}`);
-      console.log('Available courses:', courses.map(c => `${c.id}: ${c.title}`));
 
       if (isNaN(courseId)) {
         console.error('Invalid course ID format:', id);
@@ -39,7 +36,6 @@ export default function CourseDetailPage() {
       }
 
       const foundCourse = courses.find(c => c.id === courseId);
-      console.log('Found course:', foundCourse);
 
       if (foundCourse) {
         setCourse(foundCourse);

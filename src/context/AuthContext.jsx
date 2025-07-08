@@ -35,9 +35,7 @@ export function AuthProvider({ children }) {
     try {
       const response = await getUsers();
       const users = response.data;
-      console.log('Users from API:', users);
       const foundUser = users.find((u) => u.email === email);
-      console.log('Found user:', foundUser);
       if (foundUser && bcrypt.compareSync(password, foundUser.password)) {
         const userData = {
           email: foundUser.email,
