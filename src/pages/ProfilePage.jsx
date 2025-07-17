@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { getUsers, updateUser, deleteUser } from '../services/api/userApi';
+import { 
+  fetchUsers, 
+  updateUserProfile, 
+  deleteUserAccount, 
+  logoutUser
+} from '../store/redux/userSlice';
 import MainTemplate from '../components/templates/MainTemplate';
 import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import LoadingScreen from '../components/organisms/LoadingScreen';
 
 export default function ProfilePage() {
-  const { user, logout, isAdmin } = useAuth();
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('profile');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -29,9 +35,12 @@ export default function ProfilePage() {
     countryCode: '+62'
   });
 
+  const isAdmin = () => {
+    return currentUser?.role === 'admin';
+  };
+
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!user) {
+    if (!currentUser) {
       navigate('/login');
       return;
     }
@@ -41,35 +50,17 @@ export default function ProfilePage() {
       setActiveTab(tab);
     }
 
-    // Load user data from API
-    loadUserData();
-  }, [searchParams, user, navigate]);
-
-  const loadUserData = async () => {
-    try {
-      setLoading(true);
-      const response = await getUsers();
-      const users = response.data;
-      const currentUser = users.find(u => u.email === user.email);
-      
-      if (currentUser) {
-        const userData = {
-          fullName: currentUser.name || '',
-          email: currentUser.email || '',
-          phone: currentUser.telp || '',
-          countryCode: '+62'
-        };
-        setFormData(userData);
-        setOriginalData(userData);
-        setCurrentUserId(currentUser.id);
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      alert('Gagal memuat data profil. Silakan coba lagi.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Set form data directly from currentUser to avoid infinite loops
+    const userData = {
+      fullName: currentUser.name || '',
+      email: currentUser.email || '',
+      phone: currentUser.telp || '',
+      countryCode: '+62'
+    };
+    setFormData(userData);
+    setOriginalData(userData);
+    setCurrentUserId(currentUser.id);
+  }, [currentUser, navigate, searchParams]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -92,7 +83,6 @@ export default function ProfilePage() {
   };
 
   const handleSave = async () => {
-    // Validasi input
     if (!formData.fullName.trim()) {
       alert('Nama lengkap tidak boleh kosong!');
       return;
@@ -111,21 +101,24 @@ export default function ProfilePage() {
     try {
       setSaving(true);
       
-      // Prepare data for API
       const updateData = {
         name: formData.fullName,
         email: formData.email,
         telp: formData.phone
       };
 
-      // Call API to update user
-      await updateUser(currentUserId, updateData);
+      const result = await dispatch(updateUserProfile({ 
+        userId: currentUserId, 
+        userData: updateData 
+      }));
       
-      // Update original data
-      setOriginalData(formData);
-      setIsEditing(false);
-      
-      alert('Data profil berhasil diperbarui!');
+      if (updateUserProfile.fulfilled.match(result)) {
+        setOriginalData(formData);
+        setIsEditing(false);
+        alert('Data profil berhasil diperbarui!');
+      } else {
+        alert(`Gagal memperbarui data profil: ${result.payload || 'Silakan coba lagi.'}`);
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('Gagal memperbarui data profil. Silakan coba lagi.');
@@ -141,10 +134,9 @@ export default function ProfilePage() {
       return;
     }
 
-    // Double confirmation for safety
     const doubleConfirm = prompt('Konfirmasi sekali lagi:\n\nAnda benar-benar yakin ingin menghapus akun ini?\n\nKetik "HAPUS" jika Anda yakin.');
     
-    if (doubleConfirm != "HAPUS") {
+    if (doubleConfirm !== "HAPUS") {
       alert('Akun Tidak Berhasil Dihapus');
       return;
     }
@@ -152,13 +144,15 @@ export default function ProfilePage() {
     try {
       setSaving(true);
       
-      // Call API to delete user
-      await deleteUser(currentUserId);
+      const result = await dispatch(deleteUserAccount(currentUserId));
       
-      // Logout user and redirect to home
-      alert('Akun berhasil dihapus. Anda akan diarahkan ke halaman utama.');
-      logout();
-      navigate('/home');
+      if (deleteUserAccount.fulfilled.match(result)) {
+        alert('Akun berhasil dihapus. Anda akan diarahkan ke halaman utama.');
+        dispatch(logoutUser());
+        navigate('/home');
+      } else {
+        alert(`Gagal menghapus akun: ${result.payload || 'Silakan coba lagi.'}`);
+      }
     } catch (error) {
       console.error('Error deleting account:', error);
       alert('Gagal menghapus akun. Silakan coba lagi.');
@@ -179,15 +173,14 @@ export default function ProfilePage() {
     );
   }
 
-  if (!user) {
-    return null; // Will redirect to login
+  if (!currentUser) {
+    return null;
   }
 
   return (
     <MainTemplate>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <Typography variant="h6" className="mb-4 font-semibold">
@@ -237,12 +230,10 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="lg:col-span-3">
             {activeTab === 'profile' && (
               <div className="bg-white rounded-lg border border-gray-200 p-8">
                 <div className="flex items-start gap-6 mb-8">
-                  {/* Profile Photo */}
                   <div className="flex-shrink-0">
                     <img
                       src="/assets/index/Avatar.png"
@@ -251,7 +242,6 @@ export default function ProfilePage() {
                     />
                   </div>
                   
-                  {/* Profile Info */}
                   <div className="flex-1">
                     <Typography variant="h5" className="font-semibold mb-1">
                       {formData.fullName || 'Nama Pengguna'}
@@ -265,9 +255,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Form */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Nama Lengkap */}
                   <div>
                     <label className="block mb-2">
                       <Typography variant="body2" className="font-medium text-gray-700">
@@ -289,7 +277,6 @@ export default function ProfilePage() {
                     />
                   </div>
 
-                  {/* E-Mail */}
                   <div>
                     <label className="block mb-2">
                       <Typography variant="body2" className="font-medium text-gray-700">
@@ -307,7 +294,6 @@ export default function ProfilePage() {
                     />
                   </div>
 
-                  {/* No. Hp */}
                   <div className="md:col-span-2">
                     <label className="block mb-2">
                       <Typography variant="body2" className="font-medium text-gray-700">
@@ -348,7 +334,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-4 mt-8">
                   {isAdmin() ? (
                     <div className="text-center py-4">

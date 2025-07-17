@@ -1,13 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Logo from '../atoms/Logo';
 import Typography from '../atoms/Typography';
 import ProfileMenu from '../organisms/ProfileMenu';
-import { useAuth } from '../../context/AuthContext';
 
 const MainTemplate = ({ children }) => {
-  const { isAdmin } = useAuth();
+  const { currentUser } = useSelector((state) => state.user);
+  
+  const isAdmin = () => {
+    return currentUser?.role === 'admin';
+  };
   
   return (
     <div className="bg-[#fffdf3] font-['DM_Sans',sans-serif] text-[16px] font-medium min-h-screen flex flex-col">

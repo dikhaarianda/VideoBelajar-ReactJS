@@ -5,12 +5,11 @@ import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import CourseCard from '../components/organisms/CourseCard';
 import LoadingScreen from '../components/organisms/LoadingScreen';
-import { useCourses } from '../context/CourseContext';
+import courses from '../hooks/courseData';
 
 export default function CourseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getCourseById, courses } = useCourses();
   const [course, setCourse] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
   const [expandedSections, setExpandedSections] = useState({});
@@ -56,9 +55,9 @@ export default function CourseDetailPage() {
   if (!courses || courses.length === 0) {
     return (
       <MainTemplate>
-        <LoadingScreen 
-          message="Loading courses..." 
-          size="large" 
+        <LoadingScreen
+          message="Loading courses..."
+          size="large"
           color="primary"
         />
       </MainTemplate>
@@ -75,9 +74,9 @@ export default function CourseDetailPage() {
   if (!course) {
     return (
       <MainTemplate>
-        <LoadingScreen 
-          message="Loading course details..." 
-          size="large" 
+        <LoadingScreen
+          message="Loading course details..."
+          size="large"
           color="primary"
         />
       </MainTemplate>
@@ -108,7 +107,7 @@ export default function CourseDetailPage() {
             <Typography variant="body1" color="white" className="mb-4 opacity-90">
               {course.description}
             </Typography>
-            
+
             <div className="flex items-center gap-4 mb-6">
               <div className="flex text-yellow-400">
                 {course.stars.map((star, index) => (
@@ -122,7 +121,7 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
@@ -175,18 +174,24 @@ export default function CourseDetailPage() {
                       </Typography>
                       <i className={`fas fa-chevron-${expandedSections[module.id] ? 'up' : 'down'} text-gray-400`}></i>
                     </button>
-                    
+
                     {expandedSections[module.id] && module.lessons.length > 0 && (
                       <div className="border-t border-gray-200 p-4">
                         {module.lessons.map((lesson, index) => (
                           <div key={index} className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-3">
-                              <i className="fas fa-play-circle text-blue-500"></i>
+                              <i className="fas fa-play-circle text-gray-500"></i>
                               <Typography variant="body2">{lesson.title}</Typography>
                             </div>
                             <div className="flex items-center gap-4">
-                              <span className="text-sm text-gray-500">Video</span>
-                              <span className="text-sm text-gray-500">{lesson.duration}</span>
+                              <div className="flex items-center gap-1 text-gray-500">
+                                <i className="fas fa-video"></i>
+                                <span className="text-sm">Video</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-gray-500">
+                                <i className="fas fa-clock"></i>
+                                <span className="text-sm">{lesson.duration}</span>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -221,9 +226,9 @@ export default function CourseDetailPage() {
                       <div className="flex items-center gap-2">
                         <div className="flex text-yellow-400">
                           {[...Array(5)].map((_, index) => (
-                            <i 
-                              key={index} 
-                              className={`fas fa-star${index >= review.rating ? '-o' : ''} text-xs`} 
+                            <i
+                              key={index}
+                              className={`fas fa-star${index >= review.rating ? '-o' : ''} text-xs`}
                             />
                           ))}
                         </div>
@@ -241,7 +246,7 @@ export default function CourseDetailPage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8">
-              <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+              <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
                 <div>
                   <Typography variant="h6" className="mb-2 font-semibold">
                     {course.title}

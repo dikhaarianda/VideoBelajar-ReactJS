@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MdOutlineLogout } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { useSelector, useDispatch } from 'react-redux';
 import Typography from '../atoms/Typography';
-import { useAuth } from '../../context/AuthContext';
+import { logoutUser } from '../../store/redux/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { user, logout } = useAuth();
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleClickOutside = (event) => {
@@ -40,11 +42,11 @@ const ProfileMenu = () => {
     setIsOpen(false);
     
     if (item.label === 'Keluar') {
-      logout();
+      dispatch(logoutUser());
       window.location.reload();
     } else {
       // If user is not logged in and clicks on profile-related items, redirect to login
-      if (!user) {
+      if (!currentUser) {
         navigate('/login');
       } else {
         // Handle navigation for logged-in users
@@ -74,7 +76,7 @@ const ProfileMenu = () => {
     ];
 
     // Only show logout button if user is logged in
-    if (user) {
+    if (currentUser) {
       return [
         ...baseItems,
         { label: 'Keluar', icon: MdOutlineLogout, className: 'text-red-500' }
@@ -97,7 +99,7 @@ const ProfileMenu = () => {
           className="transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
         >
           <img 
-            src={user ? "/assets/index/Avatar.png" : "/assets/index/Avatar1.png"}
+            src={currentUser ? "/assets/index/Avatar.png" : "/assets/index/Avatar1.png"}
             alt="User Profile" 
             className="hidden sm:block w-10 h-10 rounded-sm object-cover"
           />

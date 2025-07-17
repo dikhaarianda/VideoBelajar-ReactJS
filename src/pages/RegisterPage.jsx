@@ -1,12 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { registerUser, clearError } from '../store/redux/userSlice';
 import AuthTemplate from '../components/templates/AuthTemplate';
 import AuthForm from '../components/organisms/AuthForm';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { register, loading } = useAuth();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
 
   const handleSubmit = async (formData) => {
     const { fullName, email, phone, password, confirmPassword } = formData;
@@ -29,12 +31,20 @@ export default function RegisterPage() {
       return;
     }
     
-    const success = await register(formData);
-    if (success) {
-      alert('Pendaftaran berhasil! Silakan login dengan akun baru Anda.');
-      navigate('/login');
-    } else {
-      alert('Pendaftaran gagal! Email mungkin sudah terdaftar atau terjadi kesalahan. Silakan coba lagi.');
+    // Clear previous errors
+    dispatch(clearError());
+    
+    try {
+      const result = await dispatch(registerUser(formData));
+      
+      if (registerUser.fulfilled.match(result)) {
+        alert('Pendaftaran berhasil! Silakan login dengan akun baru Anda.');
+        navigate('/login');
+      } else {
+        alert(`Pendaftaran gagal! ${result.payload || 'Email mungkin sudah terdaftar atau terjadi kesalahan. Silakan coba lagi.'}`);
+      }
+    } catch (error) {
+      alert('Pendaftaran gagal! Terjadi kesalahan sistem.');
     }
   };
 

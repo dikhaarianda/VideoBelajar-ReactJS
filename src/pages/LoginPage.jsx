@@ -1,12 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginUser, clearError } from '../store/redux/userSlice';
 import AuthTemplate from '../components/templates/AuthTemplate';
 import AuthForm from '../components/organisms/AuthForm';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, loading } = useAuth();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
 
   const handleSubmit = async (formData) => {
     const { email, password } = formData;
@@ -17,12 +19,20 @@ export default function LoginPage() {
       return;
     }
     
-    const success = await login(email, password);
-    if (success) {
-      alert('Login berhasil! Selamat datang kembali.');
-      navigate('/home');
-    } else {
-      alert('Login gagal! Email atau password yang Anda masukkan salah.');
+    // Clear previous errors
+    dispatch(clearError());
+    
+    try {
+      const result = await dispatch(loginUser({ email, password }));
+      
+      if (loginUser.fulfilled.match(result)) {
+        alert('Login berhasil! Selamat datang kembali.');
+        navigate('/home');
+      } else {
+        alert(`Login gagal! ${result.payload || 'Email atau password yang Anda masukkan salah.'}`);
+      }
+    } catch (error) {
+      alert('Login gagal! Terjadi kesalahan sistem.');
     }
   };
 

@@ -4,10 +4,9 @@ import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import CourseCard from '../components/organisms/CourseCard';
 import LoadingScreen from '../components/organisms/LoadingScreen';
-import { useCourses } from '../context/CourseContext';
+import courses from '../hooks/courseData';
 
 export default function HomePage() {
-  const { courses } = useCourses();
   const [activeCategory, setActiveCategory] = useState('Semua Kelas');
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterMessage, setNewsletterMessage] = useState('');
