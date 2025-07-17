@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MainTemplate from '../components/templates/MainTemplate';
 import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import CourseCard from '../components/organisms/CourseCard';
 import LoadingScreen from '../components/organisms/LoadingScreen';
-import courses from '../hooks/courseData';
+import { fetchKursus, selectKursus, selectKursusLoading, selectKursusError } from '../store/redux/kursusSlice';
 
 export default function HomePage() {
+  const dispatch = useDispatch();
+  const courses = useSelector(selectKursus);
+  const isKursusLoading = useSelector(selectKursusLoading);
+  const kursusError = useSelector(selectKursusError);
+  
   const [activeCategory, setActiveCategory] = useState('Semua Kelas');
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterMessage, setNewsletterMessage] = useState('');
@@ -17,18 +23,20 @@ export default function HomePage() {
 
   const filteredCourses = activeCategory === 'Semua Kelas' 
     ? courses 
-    : courses.filter(course => course.category === activeCategory);
+    : courses.filter(course => (course.kategori || course.category) === activeCategory);
 
-  // Initial loading effect
+  // Initial loading effect and fetch courses
   useEffect(() => {
     const initializeHomePage = async () => {
+      // Fetch courses from API
+      dispatch(fetchKursus());
       // Simulate initial loading time for better UX
       await new Promise(resolve => setTimeout(resolve, 1500));
       setIsInitialLoading(false);
     };
 
     initializeHomePage();
-  }, []);
+  }, [dispatch]);
 
   const handleCategoryClick = async (category) => {
     setIsLoading(true);

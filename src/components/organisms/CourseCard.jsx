@@ -4,6 +4,27 @@ import { Link } from 'react-router-dom';
 import Typography from '../atoms/Typography';
 
 const CourseCard = ({ course }) => {
+  // Generate star rating based on numeric rating
+  const generateStars = (rating) => {
+    const numRating = parseFloat(rating) || 0;
+    const stars = [];
+    const fullStars = Math.floor(numRating);
+    const hasHalfStar = numRating % 1 >= 0.5;
+    
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push('full');
+      } else if (i === fullStars && hasHalfStar) {
+        stars.push('half');
+      } else {
+        stars.push('empty');
+      }
+    }
+    return stars;
+  };
+
+  const stars = generateStars(course.rating);
+
   return (
     <Link 
       to={`/course/${course.id}`}
@@ -11,16 +32,19 @@ const CourseCard = ({ course }) => {
     >
       <div className="flex sm:block gap-5">
         <img
-          src={course.image}
-          alt={`${course.title} Cover`}
+          src={course.imgKursus || course.image || '/assets/index/course section/course type/image-1.jpeg'}
+          alt={`${course.judul || course.title} Cover`}
           className="w-1/6 h-24 sm:w-full sm:h-64 rounded-lg object-cover"
+          onError={(e) => {
+            e.target.src = '/assets/index/course section/course type/image-1.jpeg';
+          }}
         />
         <div className="w-5/6 sm:w-full">
           <Typography
             variant="h6"
             className="mt-0 sm:mt-4"
           >
-            {course.title}
+            {course.judul || course.title}
           </Typography>
 
           <Typography
@@ -28,25 +52,28 @@ const CourseCard = ({ course }) => {
             color="secondary"
             className="hidden sm:block line-clamp-2"
           >
-            {course.description}
+            {course.descSingkat || course.description}
           </Typography>
 
           <div className="flex items-center my-3">
             <img
-              src={course.teacherImage}
-              alt={course.teacherName}
+              src={course.imgTutor || course.teacherImage || '/assets/index/course section/course teacher/image-1.png'}
+              alt={course.namaTutor || course.teacherName}
               className="size-7 sm:size-8 rounded-md"
+              onError={(e) => {
+                e.target.src = '/assets/index/course section/course teacher/image-1.png';
+              }}
             />
             <div className="ml-2">
               <Typography variant="body1">
-                {course.teacherName}
+                {course.namaTutor || course.teacherName}
               </Typography>
               <Typography
                 variant="body2"
                 color="secondary"
                 className="font-normal"
               >
-                {course.teacherJob}
+                {course.pekerjaanTutor || course.teacherJob}
               </Typography>
             </div>
           </div>
@@ -56,7 +83,7 @@ const CourseCard = ({ course }) => {
       <div className="flex gap-5 sm:justify-between sm:gap-0 items-center mt-3">
         <div className="flex gap-2 items-center">
           <ul className="flex text-yellow-400 space-x-1">
-            {course.stars.map((star, i) => (
+            {stars.map((star, i) => (
               <i
                 key={i}
                 className={`${star === 'empty' ? 'far' : 'fas'} fa-star${
@@ -71,7 +98,7 @@ const CourseCard = ({ course }) => {
             color="secondary"
             className="underline hover:text-[#3ECF4C] transition-colors"
           >
-            {course.rating}
+            {course.rating} (86)
           </Typography>
         </div>
         <Typography
@@ -79,7 +106,7 @@ const CourseCard = ({ course }) => {
           color="primary"
           className="font-bold"
         >
-          {course.price}
+          {course.harga || course.price}
         </Typography>
       </div>
     </Link>
@@ -88,16 +115,24 @@ const CourseCard = ({ course }) => {
 
 CourseCard.propTypes = {
   course: PropTypes.shape({
-    id: PropTypes.number,
-    image: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    teacherImage: PropTypes.string.isRequired,
-    teacherName: PropTypes.string.isRequired,
-    teacherJob: PropTypes.string.isRequired,
-    stars: PropTypes.arrayOf(PropTypes.oneOf(['full', 'half', 'empty'])).isRequired,
-    rating: PropTypes.string.isRequired,
-    price: PropTypes.string.isRequired
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    judul: PropTypes.string,
+    title: PropTypes.string,
+    descSingkat: PropTypes.string,
+    description: PropTypes.string,
+    imgKursus: PropTypes.string,
+    image: PropTypes.string,
+    imgTutor: PropTypes.string,
+    teacherImage: PropTypes.string,
+    namaTutor: PropTypes.string,
+    teacherName: PropTypes.string,
+    pekerjaanTutor: PropTypes.string,
+    teacherJob: PropTypes.string,
+    rating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    harga: PropTypes.string,
+    price: PropTypes.string,
+    kategori: PropTypes.string,
+    category: PropTypes.string
   }).isRequired
 };
 
